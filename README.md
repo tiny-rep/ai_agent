@@ -44,6 +44,12 @@
 
 本项目采用容器方式进行部署，后端采用python语言，基于langChain、langGraph、Flask框架实现，前端基于vue3框架实现。
 
+### 已构建的镜像地址
+
+https://www.alipan.com/s/jXXYeS3Y4eR
+
+aiagent-api需要支持多种不同类型的文件解析，导致后端镜像近30GB，上述链接是已构建好的镜像文件。
+
 ### 业务镜像
 
 * aiagent-api：后端接口服务
