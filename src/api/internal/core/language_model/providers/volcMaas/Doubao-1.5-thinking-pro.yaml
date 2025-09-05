@@ -1,0 +1,21 @@
+model: Doubao-1.5-thinking-pro
+label: Doubao-1.5-thinking-pro
+model_type: chat
+features:
+  - tool_call
+  - agent_thought
+context_window: 16384
+max_output_tokens: 8000
+attributes:
+  model: doubao-1-5-thinking-pro-250415
+parameters:
+  - name: max_tokens
+    use_template: max_tokens
+    default: 4096
+    max: 16384
+metadata:
+  pricing:
+    input: 0.002
+    output: 0.008
+    unit: 0.001
+    currency: RMB

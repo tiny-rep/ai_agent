@@ -1,0 +1,26 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iframe嵌入测试</title>
+</head>
+<body>  
+  <script>
+  function loaded () {
+    const data = {
+      app_token: 'ex_link_PvoVehGZptI23Gt4',
+      conversationId: 'c4ce3a4c-26a8-44f3-9c4a-9935d5e66f87', // c4ce3a4c-26a8-44f3-9c4a-9935d5e6afe7
+      question: null // '你好，请问你是谁' + Date.now() // 如果传递null，表示不发起自动提问
+    }
+    document.getElementById('test').contentWindow.postMessage(JSON.stringify(data))
+  }
+  window.addEventListener('message', function (ev) {
+    // 嵌入页面已准备好
+    console.log(ev)
+    loaded()
+  }, false) 
+  </script>
+  <button onclick="loaded()" >按钮</button>
+  <iframe id="test" src="http://localhost:5173/ex-link/ex-link-switch-web-app/7b77f3ff-e5f2-4f9f-b351-a9acc0678bbb" width="100%" height="100%" />
+</body>
+</html>

@@ -1,0 +1,1 @@
+OPENAPI_STRUCT_OUTPUT_TEMPLATE_NAME = "根据用户传递的内容和结构化格式输出结构化数据"

@@ -1,0 +1,26 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    window.onload = async () => {
+      const resp = await fetch('http://127.0.0.1:5000/openapi/chat',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          "Authorization": "bearer llmops-v1/f4OAwyi5KynFsVQVCCldu5T9-c14hreAZH9eBhdtbyTSCoIsAZ3-HSGQhXLnCqHV"
+        },
+        body: JSON.stringify({
+          "app_id": "1ec73b11-0851-4ea3-bd52-9a25f1faa919",
+          "query": "写一首关于春天的七言诗，要有诗句标题",
+        })
+      })
+      console.log(resp.json())
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,342 @@
+version: '3'
+services:
+  aiagent-ui:
+    image: aiagent-ui:0.1.0
+    networks:
+      - aiagent-network
+    hostname: aiagent-ui
+    restart: always
+    environment: { }
+    ports:
+      - "18101:3000"
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+  aiagent-api:
+    image: aiagent-api:0.1.0
+    networks:
+      - aiagent-network
+    hostname: aiagent-api
+    restart: always
+    volumes:
+      - ./volumes/app/storage:/app/api/storage
+    environment:
+      # 运行模式，代表启用Api服务
+      MODE: api
+      SERVER_WORKER_AMOUNT: 4
+      SERVER_THREAD_AMOUNT: 4
+
+      # 数据库迁移配置
+      MIGRATION_ENABLED: 'true'
+
+      JWT_SECRET_KEY: 
+
+      WTF_CSRF_ENABLED: 'false'
+
+      # COS
+      COS_DOMAIN: ""
+
+      # 服务配置
+      SERVICE_IP: 
+      SERVICE_API_PREFIX: 
+
+      # database配置
+      SQLALCHEMY_DATABASE_URI: postgresql://postgres:q.1.w@aiagent-db:5432/ai_agent_db?client_encoding=utf8
+      SQLALCHEMY_ECHO: 'true'
+      SQLALCHEMY_POOL_SIZE: 30
+      SQLALCHEMY_POOL_RECYCLE: 260
+
+      # redis的配置
+      REDIS_HOST: aiagent-redis
+      REDIS_PORT: 6379
+      REDIS_USERNAME: ''
+      REDIS_PASSWORD: 1.a
+      REDIS_DB: 0
+      REDIS_USE_SSL: 'false'
+
+      # weaviate向量数据库配置
+      WEAVIATE_HTTP_HOST: aiagent-weaviate
+      WEAVIATE_HTTP_PORT: 8080
+      WEAVIATE_GRPC_HOST: aiagent-weaviate
+      WEAVIATE_GRPC_PORT: 50051
+      WEAVIATE_API_KEY: ftBC9hKkjfdbdi0wW3T6kEtMh5BZFpGa1DFf
+
+      # celery配置
+      CELERY_BROKER_DB: 1
+      CELERY_RESULT_BACKEND_DB: 1
+      CELERY_TASK_IGNORE_RESULT: 'false'
+      CELERY_RESULT_EXPIRES: 3600
+      CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP: 'true'
+
+      #github
+      GITHUB_CLIENT_ID: 
+      GITHUB_CLIENT_SECRET: 
+      GITHUB_REDIRECT_URI: # 域名地址
+
+      #langSimth
+      LANGCHAIN_TRACING_V2: 'true'
+      LANGCHAIN_ENDPOINT: 
+      LANGCHAIN_API_KEY: 
+      LANGCHAIN_PROJECT: 
+
+      # huggingFace配置
+      TRANSFORMERS_OFFLINE: 0
+
+      # 辅助Agentid的编号
+      ASSISTANT_AGENT_ID: 6774fcef-b594-8008-b30c-a05b8190afe9
+
+      # openapi
+      OPENAI_API_BASE: 
+      OPENAI_API_KEY: 
+
+      # 百度千帆服务提供者
+      qianfan_ak: 
+      qianfan_sk: 
+
+      #moonshot
+      MOONSHOT_API_KEY: 
+
+      # 通义千问服务提供者
+      DASHSCOPE_API_KEY: 
+
+      # deepseek
+      DEEPSEEK_API_KEY: 
+      DEEPSEEK_API_BASE: 
+
+      # 高德APIKEY
+      GAODE_API_KEY: 
+
+      # serper apiKey
+      SERPER_API_KEY: 
+      
+      # 系统默认LLM模型配置，需要在模型列表中受支持的
+      LLM_DEFAULT_MODEL_PROVIDER: tongyi
+      LLM_DEFAULT_MODEL_NAME: qwen-max
+      
+      # 系统embedding策略 openai qwen
+      LLM_EMBEDDING_STRATEGY: qwen
+
+    ports:
+      - "18106:5001"
+    depends_on:
+      - aiagent-db
+      - aiagent-redis
+      - aiagent-weaviate
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+  aiagent-celery:
+    image: aiagent-api:0.1.0
+    networks:
+      - aiagent-network
+    build:
+      context: ../api
+      dockerfile: Dockerfile
+    hostname: aiagent-celery
+    restart: always
+    volumes:
+      - ./volumes/app/storage:/app/api/storage
+    environment:
+      # 运行模式，代表启用Api服务
+      MODE: celery
+      SERVER_WORKER_AMOUNT: 4
+
+      # 数据库迁移配置
+      MIGRATION_ENABLED: 'false'
+
+      JWT_SECRET_KEY: 
+
+      WTF_CSRF_ENABLED: 'false'
+
+      # database配置
+      SQLALCHEMY_DATABASE_URI: postgresql://postgres:q.1.w@aiagent-db:5432/ai_agent_db?client_encoding=utf8
+      SQLALCHEMY_ECHO: 'true'
+      SQLALCHEMY_POOL_SIZE: 30
+      SQLALCHEMY_POOL_RECYCLE: 260
+
+      # COS
+      COS_DOMAIN: ""
+
+      # redis的配置
+      REDIS_HOST: aiagent-redis
+      REDIS_PORT: 6379
+      REDIS_USERNAME: ''
+      REDIS_PASSWORD: 1.a
+      REDIS_DB: 0
+      REDIS_USE_SSL: 'false'
+
+      # weaviate向量数据库配置
+      WEAVIATE_HTTP_HOST: aiagent-weaviate
+      WEAVIATE_HTTP_PORT: 8080
+      WEAVIATE_GRPC_HOST: aiagent-weaviate
+      WEAVIATE_GRPC_PORT: 50051
+      WEAVIATE_API_KEY: ftBC9hKkjfdbdi0wW3T6kEtMh5BZFpGa1DFf
+
+      # celery配置
+      CELERY_BROKER_DB: 1
+      CELERY_RESULT_BACKEND_DB: 1
+      CELERY_TASK_IGNORE_RESULT: 'false'
+      CELERY_RESULT_EXPIRES: 3600
+      CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP: 'true'
+
+      #github
+      GITHUB_CLIENT_ID: 
+      GITHUB_CLIENT_SECRET: 
+      GITHUB_REDIRECT_URI: # 域名地址
+
+      #langSimth
+      LANGCHAIN_TRACING_V2: 'true'
+      LANGCHAIN_ENDPOINT: 
+      LANGCHAIN_API_KEY: 
+      LANGCHAIN_PROJECT: 
+
+      # huggingFace配置
+      TRANSFORMERS_OFFLINE: 0
+
+      # 辅助Agentid的编号
+      ASSISTANT_AGENT_ID: 6774fcef-b594-8008-b30c-a05b8190afe9
+
+      # openapi
+      OPENAI_API_BASE: 
+      OPENAI_API_KEY: 
+
+      # 百度千帆服务提供者
+      qianfan_ak: 
+      qianfan_sk: 
+
+      #moonshot
+      MOONSHOT_API_KEY: 
+
+      # 通义千问服务提供者
+      DASHSCOPE_API_KEY: 
+
+      # deepseek
+      DEEPSEEK_API_KEY: 
+      DEEPSEEK_API_BASE: 
+
+      # 高德APIKEY
+      GAODE_API_KEY: 
+
+      # serper apiKey
+      SERPER_API_KEY: 
+      
+      # 系统默认LLM模型配置，需要在模型列表中受支持的
+      LLM_DEFAULT_MODEL_PROVIDER: tongyi
+      LLM_DEFAULT_MODEL_NAME: qwen-max
+      
+      # 系统embedding策略 openai qwen
+      LLM_EMBEDDING_STRATEGY: qwen
+
+    depends_on:
+      - aiagent-db
+      - aiagent-redis
+      - aiagent-weaviate
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+  aiagent-redis:
+    image: redis:6-alpine
+    networks:
+      - aiagent-network
+    hostname: aiagent-redis
+    restart: always
+    volumes:
+      - ./volumes/redis/data:/data
+    command: redis-server --requirepass 1.a
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+    ports:
+      - "18102:6379"
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+  aiagent-db:
+    image: postgres:15-alpine
+    networks:
+      - aiagent-network
+    hostname: aiagent-db
+    restart: always
+    environment:
+      PGUSER: postgres
+      POSTGRES_PASSWORD: q.1.w
+      POSTGRES_DB: ai_agent_db
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./volumes/db/data:/var/lib/postgresql/data/pgdata
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      # 每1秒发起一次健康检测，最多重试30次
+      test: ["CMD", "pg_isready"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+    ports:
+      - "18103:5432"
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+  aiagent-weaviate:
+    image: semitechnologies/weaviate:1.28.4
+    networks:
+      - aiagent-network
+    hostname: aiagent-weaviate
+    restart: always
+    environment:
+      QUERY_DEFAULTS_LIMIT: 25 # 查询默认返回的数据条数
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: 'false'  # 需要授权才能和weaviate进行交互
+      PERSISTENCE_DATA_PATH: /var/lib/weaviate  # weaviate数据存储路径
+      DEFAULT_VECTORIZER_MODULE: 'none'  # 向量化模块设置为none
+      CLUSTER_HOSTNAME: 'node1'  # 节点的主机名字
+      AUTHENTICATION_APIKEY_ENABLED: 'true'  # 启动基于API秘钥的身份校验
+      AUTHENTICATION_APIKEY_ALLOWED_KEYS: 'ftBC9hKkjfdbdi0wW3T6kEtMh5BZFpGa1DFf'  # 允许的API秘钥列表
+      AUTHENTICATION_APIKEY_USERS: 'email@qq.com'  # 基于秘钥的API身份列表
+      AUTHORIZATION_ADMINLIST_ENABLED: 'true'  # 启动AdminList授权方案
+      AUTHORIZATION_ADMINLIST_USERS: 'email@qq.com'  # 使用AdminList方案时具有管理权限的用户
+    volumes:
+      - ./volumes/weaviate:/var/lib/weaviate
+    ports:
+      - "18104:8080"
+      - "18105:50051"
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          memory: 600MB
+        reservations:
+          memory: 300MB
+  aiagent-nginx:
+    image: nginx:latest
+    networks:
+      - aiagent-network
+    hostname: aiagent-nginx
+    restart: always
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/proxy.conf:/etc/nginx/proxy.conf
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - aiagent-ui
+      - aiagent-api
+    ports:
+      - "80:80" # 18100
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+networks:
+  aiagent-network:
+    driver: overlay
