@@ -109,9 +109,8 @@ celery -A app.http.app.celery worker --loglevel=INFO --pool=solo --concurrency=5
 yarn dev
 ```
 
-##  声明
+##  说明
 
-* 本项目源码在《AI Agent 全栈开发》体系课基础上精心打磨、拓展，增加了部分实用性功能 。
 * 开源目标：提供一个大家共同学习和交流的平台
 * 如需交流可加QQ：372323841；微信：cqhaibin
 
